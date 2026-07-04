@@ -1,13 +1,15 @@
 const admin = require("firebase-admin");
 
-const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
-  ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-  : require("../serviceAccountKey.json");
+let serviceAccount;
 
-// Debug credential
-console.log("Firebase Project:", serviceAccount.project_id);
-console.log("Firebase Email:", serviceAccount.client_email);
-console.log("Has Private Key:", !!serviceAccount.private_key);
+if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+
+  // Perbaiki newline private key
+  serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+} else {
+  serviceAccount = require("../serviceAccountKey.json");
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
